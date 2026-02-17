@@ -1,0 +1,5 @@
+{
+  "name": "VN Maker & Player",
+  "description": "A comprehensive visual novel engine and editor optimized for cross-device horizontal play. Features a built-in admin panel for creating stories, managing scenes, and branching narratives.",
+  "requestFramePermissions": []
+}
