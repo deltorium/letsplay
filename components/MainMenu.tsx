@@ -1,12 +1,14 @@
-import React from 'react';
-import { Play, Settings, Wrench } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Play, Settings, Wrench, RotateCcw } from 'lucide-react';
 
 interface MainMenuProps {
   onPlay: () => void;
+  onContinue: () => void;
   onAdmin: () => void;
+  hasSave: boolean;
 }
 
-export const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onAdmin }) => {
+export const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onContinue, onAdmin, hasSave }) => {
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center bg-slate-900 overflow-hidden">
       {/* Background with overlay */}
@@ -25,7 +27,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onAdmin }) => {
       </button>
 
       {/* Content */}
-      <div className="z-10 flex flex-col items-center animate-fade-in text-center px-4">
+      <div className="z-10 flex flex-col items-center animate-fade-in text-center px-4 w-full max-w-md">
         <h1 className="font-title text-5xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-300 to-purple-400 mb-2 drop-shadow-lg tracking-wider">
           Я НЕ ПРИДУМАЛ
         </h1>
@@ -33,19 +35,33 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onPlay, onAdmin }) => {
           Интерактивная Визуальная Новелла
         </p>
 
-        <button 
-          onClick={onPlay}
-          className="group relative px-12 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-bold text-xl md:text-2xl transition-all duration-300 shadow-[0_0_20px_rgba(79,70,229,0.5)] hover:shadow-[0_0_40px_rgba(79,70,229,0.7)] hover:-translate-y-1 active:translate-y-0 overflow-hidden"
-        >
-          <span className="relative z-10 flex items-center gap-3">
-            <Play fill="currentColor" /> Играть
-          </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </button>
+        <div className="flex flex-col gap-4 w-full px-8">
+            {hasSave && (
+                <button 
+                    onClick={onContinue}
+                    className="w-full relative px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xl transition-all duration-300 shadow-lg hover:-translate-y-1 active:translate-y-0 group overflow-hidden"
+                >
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                        <RotateCcw fill="currentColor" size={24} /> Продолжить
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-green-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </button>
+            )}
+
+            <button 
+            onClick={onPlay}
+            className={`w-full relative px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xl transition-all duration-300 shadow-lg hover:-translate-y-1 active:translate-y-0 group overflow-hidden ${hasSave ? 'bg-slate-700 hover:bg-indigo-500' : ''}`}
+            >
+            <span className="relative z-10 flex items-center justify-center gap-3">
+                <Play fill="currentColor" size={24} /> {hasSave ? 'Новая Игра' : 'Играть'}
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </button>
+        </div>
       </div>
       
       <div className="absolute bottom-4 text-slate-600 text-xs">
-        v1.0.0 • React Engine
+        v1.1.0 • React Engine
       </div>
     </div>
   );

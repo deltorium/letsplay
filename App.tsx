@@ -12,18 +12,26 @@ const App: React.FC = () => {
   const [story, setStory] = useState<Story>(DEFAULT_STORY);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
+  const [hasSave, setHasSave] = useState(false);
+  const [loadFromSave, setLoadFromSave] = useState(false);
 
-  // Persistence
+  // Persistence for Story Data
   useEffect(() => {
-    const saved = localStorage.getItem('vn_story_data');
-    if (saved) {
+    const savedStory = localStorage.getItem('vn_story_data');
+    if (savedStory) {
       try {
-        setStory(JSON.parse(saved));
+        setStory(JSON.parse(savedStory));
       } catch (e) {
         console.error("Failed to load story", e);
       }
     }
-  }, []);
+    
+    // Check for player save
+    const playerSave = localStorage.getItem('vn_player_save');
+    if (playerSave) {
+        setHasSave(true);
+    }
+  }, [mode]); // Re-check on mode change (e.g. going back to home)
 
   const handleUpdateStory = (newStory: Story) => {
     setStory(newStory);
@@ -42,18 +50,47 @@ const App: React.FC = () => {
     }
   };
 
+  const handlePlayNew = () => {
+    setLoadFromSave(false);
+    // Optional: Clear save? Maybe not, just overwrite when they start playing.
+    setMode('PLAY');
+  };
+
+  const handleContinue = () => {
+    setLoadFromSave(true);
+    setMode('PLAY');
+  };
+
+  const getInitialPlayerState = () => {
+      if (loadFromSave) {
+          const savedData = localStorage.getItem('vn_player_save');
+          if (savedData) {
+              try {
+                  const { sceneId, stepIndex } = JSON.parse(savedData);
+                  return { sceneId, stepIndex };
+              } catch (e) {
+                  console.error("Error loading save", e);
+              }
+          }
+      }
+      return undefined;
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-black text-white">
       {mode === 'HOME' && (
         <MainMenu 
-          onPlay={() => setMode('PLAY')} 
+          onPlay={handlePlayNew}
+          onContinue={handleContinue} 
           onAdmin={() => setMode('ADMIN_LOGIN')}
+          hasSave={hasSave}
         />
       )}
 
       {mode === 'PLAY' && (
         <Player 
           story={story} 
+          initialState={getInitialPlayerState()}
           onExit={() => setMode('HOME')}
         />
       )}
