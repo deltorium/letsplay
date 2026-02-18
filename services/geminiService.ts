@@ -1,24 +1,17 @@
 import { GoogleGenAI } from "@google/genai";
 import { Scene } from "../types";
 
-const apiKey = process.env.API_KEY || '';
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const generateSceneContent = async (
   prompt: string, 
   currentScene: Scene
 ): Promise<Partial<Scene> | null> => {
-  if (!ai) {
-    console.warn("API Key not found");
-    return null;
-  }
-
   try {
-    const model = ai.models;
     // Context helper
     const existingDialogue = currentScene.script.map(d => `${d.id} [${d.speaker}]: ${d.text}`).join('\n');
 
-    const response = await model.generateContent({
+    const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `
         You are a creative writer helper for a visual novel engine.
